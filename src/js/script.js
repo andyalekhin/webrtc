@@ -6,7 +6,9 @@ const hangupButton = document.getElementById('hangupButton');
 
 const getOffer = document.getElementById('getOffer');
 const setOffer = document.getElementById('setOffer');
+const getAnswer = document.getElementById('getAnswer');
 const setOfferButton = document.getElementById('setOfferButton');
+const setAnswerButton = document.getElementById('setAnswerButton');
 
 callButton.disabled = true;
 hangupButton.disabled = true;
@@ -14,6 +16,7 @@ startButton.addEventListener('click', start);
 callButton.addEventListener('click', call);
 hangupButton.addEventListener('click', hangup);
 setOfferButton.addEventListener('click', setOffet);
+setAnswerButton.addEventListener('click', setAnswer);
 
 let startTime;
 const localVideo = document.getElementById('localVideo');
@@ -245,6 +248,27 @@ async function setOffet() {
     // accept the incoming offer of audio and video.
     try {
         const answer = await pc2.createAnswer();
+        // console.log(answer.sdp);
+        
+        getAnswer.value = answer.sdp;
+        
+        // await onCreateAnswerSuccess(answer);
+    } catch (e) {
+        onCreateSessionDescriptionError(e);
+    }
+}
+
+
+async function setAnswer() {
+    console.log('answer');
+    let answer = {
+        sdp: getAnswer.value,
+        type: "answer",
+    };
+    
+    console.log(answer);
+
+    try {
         await onCreateAnswerSuccess(answer);
     } catch (e) {
         onCreateSessionDescriptionError(e);
