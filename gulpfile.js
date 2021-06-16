@@ -95,20 +95,6 @@ function js() {
         .pipe(browsersync.stream())
 }
 
-function jsLibs() {
-    return gulp.src([
-        'node_modules/jquery/dist/jquery.min.js',
-        'node_modules/inputmask/dist/jquery.inputmask.min.js',
-        'node_modules/autosize/dist/autosize.min.js',
-        'node_modules/animejs/lib/anime.min.js',
-        'node_modules/scrollmagic/scrollmagic/minified/ScrollMagic.min.js'
-    ])
-    .pipe(gulpif(production, uglify()))
-    .pipe(concat('libs.js'))
-    .pipe(gulp.dest(path.public.js))
-    .pipe(browsersync.stream())
-}
-
 function img() {
     return gulp.src(`${path.src.img}/**/*`)
         .pipe(gulp.dest(path.public.img))
@@ -151,7 +137,7 @@ function deploy() {
 
 const build = gulp.series(
     clean,
-    gulp.parallel(html, css, js, jsLibs, img, fonts, video)
+    gulp.parallel(html, css, js, img, fonts, video)
 );
 
 exports.build = build;
