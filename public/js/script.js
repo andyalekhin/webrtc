@@ -51,15 +51,34 @@ function getOtherPc(pc) {
 async function start() {
     console.log('Requesting local stream');
     startButton.disabled = true;
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
-        console.log('Received local stream');
-        localVideo.srcObject = stream;
-        localStream = stream;
-        callButton.disabled = false;
-    } catch (e) {
-        alert(`getUserMedia() error: ${e.name}`);
+    
+    const constraints = {
+        'video': true,
+        'audio': true
     }
+    
+    navigator.mediaDevices.getUserMedia(constraints)
+        .then(stream => {
+            console.log('Got MediaStream:', stream);
+            
+            console.log('Received local stream');
+            localVideo.srcObject = stream;
+            localStream = stream;
+            callButton.disabled = false;
+        })
+        .catch(error => {
+            console.error('Error accessing media devices.', error);
+        });
+    
+    // try {
+    //     const stream = await navigator.mediaDevices.getUserMedia({audio: true, video: true});
+    //     console.log('Received local stream');
+    //     localVideo.srcObject = stream;
+    //     localStream = stream;
+    //     callButton.disabled = false;
+    // } catch (e) {
+    //     alert(`getUserMedia() error: ${e.name}`);
+    // }
 }
 
 async function call() {
