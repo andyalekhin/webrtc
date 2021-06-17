@@ -3,6 +3,8 @@
 const startButton = document.getElementById('startButton');
 const callButton = document.getElementById('callButton');
 const hangupButton = document.getElementById('hangupButton');
+const startPC1Button = document.getElementById('startPC1Button');
+const startPC2Button = document.getElementById('startPC2Button');
 
 const getOffer = document.getElementById('getOffer');
 const setOffer = document.getElementById('setOffer');
@@ -17,6 +19,9 @@ callButton.addEventListener('click', call);
 hangupButton.addEventListener('click', hangup);
 setOfferButton.addEventListener('click', setOffet);
 setAnswerButton.addEventListener('click', setAnswer);
+startPC1Button.addEventListener('click', startPC1);
+startPC2Button.addEventListener('click', startPC2);
+
 
 let startTime;
 const localVideo = document.getElementById('localVideo');
@@ -89,31 +94,31 @@ async function call() {
         console.log(`Using audio device: ${audioTracks[0].label}`);
     }
     
-    const configuration = {};
-    console.log('RTCPeerConnection configuration:', configuration);
-    pc1 = new RTCPeerConnection(configuration);
-    console.log('Created local peer connection object pc1');
-    pc1.addEventListener('icecandidate', e => onIceCandidate(pc1, e));
+    // const configuration = {};
+    // console.log('RTCPeerConnection configuration:', configuration);
+    // pc1 = new RTCPeerConnection(configuration);
+    // console.log('Created local peer connection object pc1');
+    // pc1.addEventListener('icecandidate', e => onIceCandidate(pc1, e));
+    // pc1.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc1, e));
     
-    pc2 = new RTCPeerConnection(configuration);
-    console.log('Created remote peer connection object pc2');
-    pc2.addEventListener('icecandidate', e => onIceCandidate(pc2, e));
+    // pc2 = new RTCPeerConnection(configuration);
+    // console.log('Created remote peer connection object pc2');
+    // pc2.addEventListener('icecandidate', e => onIceCandidate(pc2, e));
+    // pc2.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc2, e));
+    // pc2.addEventListener('track', gotRemoteStream);
     
-    pc1.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc1, e));
-    pc2.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc2, e));
     
-    pc2.addEventListener('track', gotRemoteStream);
 
-    localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
-    console.log('Added local stream to pc1');
+    // localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
+    // console.log('Added local stream to pc1');
 
-    try {
-        console.log('pc1 createOffer start');
-        const offer = await pc1.createOffer(offerOptions);
-        await onCreateOfferSuccess(offer);
-    } catch (e) {
-        onCreateSessionDescriptionError(e);
-    }
+    // try {
+    //     console.log('pc1 createOffer start');
+    //     const offer = await pc1.createOffer(offerOptions);
+    //     await onCreateOfferSuccess(offer);
+    // } catch (e) {
+    //     onCreateSessionDescriptionError(e);
+    // }
 }
 
 function onCreateSessionDescriptionError(error) {
@@ -125,7 +130,6 @@ async function onCreateOfferSuccess(desc) {
     console.log('pc1 setLocalDescription start');
     try {
         await pc1.setLocalDescription(desc);
-        console.log(desc);
         getOffer.value = desc.sdp;
         onSetLocalSuccess(pc1);
     } catch (e) {
@@ -248,8 +252,6 @@ async function setOffet() {
     // accept the incoming offer of audio and video.
     try {
         const answer = await pc2.createAnswer();
-        // console.log(answer.sdp);
-        
         getAnswer.value = answer.sdp;
         
         // await onCreateAnswerSuccess(answer);
@@ -273,4 +275,33 @@ async function setAnswer() {
     } catch (e) {
         onCreateSessionDescriptionError(e);
     }
+}
+
+async function startPC1() {
+    const configuration = {};
+    console.log('RTCPeerConnection configuration:', configuration);
+    pc1 = new RTCPeerConnection(configuration);
+    console.log('Created local peer connection object pc1');
+    pc1.addEventListener('icecandidate', e => onIceCandidate(pc1, e));
+    pc1.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc1, e));
+    
+    localStream.getTracks().forEach(track => pc1.addTrack(track, localStream));
+    console.log('Added local stream to pc1');
+
+    try {
+        console.log('pc1 createOffer start');
+        const offer = await pc1.createOffer(offerOptions);
+        await onCreateOfferSuccess(offer);
+    } catch (e) {
+        onCreateSessionDescriptionError(e);
+    }
+}
+
+function startPC2() {
+    const configuration = {};
+    pc2 = new RTCPeerConnection(configuration);
+    console.log('Created remote peer connection object pc2');
+    pc2.addEventListener('icecandidate', e => onIceCandidate(pc2, e));
+    pc2.addEventListener('iceconnectionstatechange', e => onIceStateChange(pc2, e));
+    pc2.addEventListener('track', gotRemoteStream);
 }
